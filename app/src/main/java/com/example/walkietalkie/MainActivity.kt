@@ -33,9 +33,9 @@ class MainActivity : ComponentActivity() {
                 add(Manifest.permission.NEARBY_WIFI_DEVICES)
                 add(Manifest.permission.POST_NOTIFICATIONS)
             }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                add(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
+            // Section 18: Fine Location is still recommended across versions for Nearby mesh discovery
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
+            add(Manifest.permission.ACCESS_COARSE_LOCATION)
         }.toTypedArray()
 
     private val permissionLauncher = registerForActivityResult(
@@ -43,6 +43,9 @@ class MainActivity : ComponentActivity() {
     ) { results ->
         // Section 39: never crash on denial — degrade gracefully instead.
         permissionsGranted = results.values.all { it }
+
+        val app = application as WalkieTalkieApp
+        app.transportManager.start()
         startWalkieService()
     }
 
@@ -68,5 +71,11 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(intent)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val app = application as WalkieTalkieApp
+        app.transportManager.stop()
     }
 }
