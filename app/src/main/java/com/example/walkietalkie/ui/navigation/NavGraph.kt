@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -49,16 +50,16 @@ fun WalkieTalkieNavHost(app: WalkieTalkieApp) {
                             }
                         },
                         icon = { NavIcon(dest) },
-                        label = { androidx.compose.material3.Text(dest.label) }
+                        label = { Text(dest.label) }
                     )
                 }
             }
         }
-    ) { padding ->
+    ) { paddingValues ->
         NavHost(
             navController = navController,
             startDestination = Dest.Walkie.route,
-            modifier = androidx.compose.ui.Modifier.padding(padding)
+            modifier = Modifier.padding(paddingValues)
         ) {
             composable(Dest.Walkie.route) { WalkieScreen(app, activeContactId = "demo-contact") }
             composable(Dest.Chats.route) { ChatScreen(app, conversationId = "demo-conversation", receiverId = "demo-contact") }
