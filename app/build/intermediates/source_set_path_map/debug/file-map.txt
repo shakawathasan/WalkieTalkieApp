@@ -1,0 +1,65 @@
+com.example.walkietalkie.app-room-ktx-2.6.1-0 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/0069fda4e0fcaf355bb10f3e6b3cf479/transformed/room-ktx-2.6.1/res
+com.example.walkietalkie.app-lifecycle-runtime-release-1 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/03fc17a336647f2c80d92b12f46b5d0d/transformed/lifecycle-runtime-release/res
+com.example.walkietalkie.app-animation-core-release-2 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/0ad0605486ba85477dbfe590fa4512e4/transformed/animation-core-release/res
+com.example.walkietalkie.app-runtime-release-3 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/102852caaef84a0aee0b054712a8e94e/transformed/runtime-release/res
+com.example.walkietalkie.app-navigation-common-2.7.7-4 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/185bc923f5c28711be329ee5bc0ce4e9/transformed/navigation-common-2.7.7/res
+com.example.walkietalkie.app-emoji2-1.3.0-5 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/1e963e9e6789d0079ca23bf1fcbbddee/transformed/emoji2-1.3.0/res
+com.example.walkietalkie.app-activity-1.9.1-6 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/27e2e1cdba90323d80dc845347ff0132/transformed/activity-1.9.1/res
+com.example.walkietalkie.app-navigation-runtime-ktx-2.7.7-7 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/28ecdaf9d98a042837e96115f0856c35/transformed/navigation-runtime-ktx-2.7.7/res
+com.example.walkietalkie.app-material-release-8 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/2c3b29bb7184f78cf2e65e5a414f7a84/transformed/material-release/res
+com.example.walkietalkie.app-sqlite-framework-2.4.0-9 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/2ee6f8c5a293a918ecd77969023d5700/transformed/sqlite-framework-2.4.0/res
+com.example.walkietalkie.app-core-ktx-1.13.1-10 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/33e79391157b7b284bf6611fa23c421d/transformed/core-ktx-1.13.1/res
+com.example.walkietalkie.app-lifecycle-viewmodel-savedstate-2.8.4-11 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/38afff7c3ae80ef9e55edd28b9e25d4c/transformed/lifecycle-viewmodel-savedstate-2.8.4/res
+com.example.walkietalkie.app-ui-unit-release-12 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/3c1abb67223e911236d654bf0cc1ca54/transformed/ui-unit-release/res
+com.example.walkietalkie.app-ui-geometry-release-13 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/3c6d607b7250888a8e952836baa9f06d/transformed/ui-geometry-release/res
+com.example.walkietalkie.app-work-runtime-ktx-2.9.1-14 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/3f0ad26d72570ff4b74af1b6f4349637/transformed/work-runtime-ktx-2.9.1/res
+com.example.walkietalkie.app-navigation-compose-2.7.7-15 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/424260fa51aa504e970b3b30b614c32f/transformed/navigation-compose-2.7.7/res
+com.example.walkietalkie.app-lifecycle-process-2.8.4-16 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/441d8029b77f70a84ea6ddaed19451da/transformed/lifecycle-process-2.8.4/res
+com.example.walkietalkie.app-lifecycle-livedata-2.8.4-17 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/459f7f40e326793c364392c6e071b0f6/transformed/lifecycle-livedata-2.8.4/res
+com.example.walkietalkie.app-ui-text-release-18 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/46e56834472377216ae9f026d2727274/transformed/ui-text-release/res
+com.example.walkietalkie.app-animation-release-19 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/4d6f41269ec34684381ea91567175b8a/transformed/animation-release/res
+com.example.walkietalkie.app-core-1.13.1-20 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/5175aef0a5f7c4a3a49a3fa58575eee5/transformed/core-1.13.1/res
+com.example.walkietalkie.app-lifecycle-livedata-core-ktx-2.8.4-21 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/59366c0785f1d7a3f698deb6bea2c416/transformed/lifecycle-livedata-core-ktx-2.8.4/res
+com.example.walkietalkie.app-core-runtime-2.2.0-22 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/599b3501f1f586ce6c54b14acbfc34d0/transformed/core-runtime-2.2.0/res
+com.example.walkietalkie.app-activity-compose-1.9.1-23 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/5b88aee724433d74520fed23251c6867/transformed/activity-compose-1.9.1/res
+com.example.walkietalkie.app-lifecycle-service-2.8.4-24 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/680a25ed6861fa693bedf008c057db7c/transformed/lifecycle-service-2.8.4/res
+com.example.walkietalkie.app-profileinstaller-1.3.1-25 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/6950072d8c9f0fc14383be438f3fb774/transformed/profileinstaller-1.3.1/res
+com.example.walkietalkie.app-foundation-release-26 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/702c080284dfca6e016916b56f2317d2/transformed/foundation-release/res
+com.example.walkietalkie.app-work-runtime-2.9.1-27 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/76625a9ad95484de11a9973005dcb3a3/transformed/work-runtime-2.9.1/res
+com.example.walkietalkie.app-material3-release-28 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/7d7c0deab91643ec6957a623e65742d4/transformed/material3-release/res
+com.example.walkietalkie.app-play-services-nearby-19.3.0-29 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/7e345d025ca1c1577ead0cd09c70e416/transformed/play-services-nearby-19.3.0/res
+com.example.walkietalkie.app-startup-runtime-1.1.1-30 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/84fed8869e3cc9407e9fe1a6da4f79e9/transformed/startup-runtime-1.1.1/res
+com.example.walkietalkie.app-navigation-common-ktx-2.7.7-31 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/8614815428937a982e37e9959b3bb1d8/transformed/navigation-common-ktx-2.7.7/res
+com.example.walkietalkie.app-foundation-layout-release-32 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/87e9134984a08f799f8445d04f35a45d/transformed/foundation-layout-release/res
+com.example.walkietalkie.app-lifecycle-viewmodel-ktx-2.8.4-33 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/959ed01e308dae7910b7bacbd8068c59/transformed/lifecycle-viewmodel-ktx-2.8.4/res
+com.example.walkietalkie.app-material-ripple-release-34 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/a237a9768862d52bbe6950133b8a2a19/transformed/material-ripple-release/res
+com.example.walkietalkie.app-material-icons-core-release-35 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/a422a58c2f44e39b69d06ef7c40d7a34/transformed/material-icons-core-release/res
+com.example.walkietalkie.app-ui-graphics-release-36 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/a845cae0974b616ace9a2536bb348754/transformed/ui-graphics-release/res
+com.example.walkietalkie.app-annotation-experimental-1.4.0-37 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/aabdc9b21c71e8195074273e26702ac4/transformed/annotation-experimental-1.4.0/res
+com.example.walkietalkie.app-ui-tooling-preview-release-38 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/ac261f4a235cf047892d3d302beb9edd/transformed/ui-tooling-preview-release/res
+com.example.walkietalkie.app-sqlite-2.4.0-39 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/ad56fa3af6f6ed88ef6c09df4624cf3c/transformed/sqlite-2.4.0/res
+com.example.walkietalkie.app-savedstate-1.2.1-40 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/b053b487c7d6a0b64381ee7d14225130/transformed/savedstate-1.2.1/res
+com.example.walkietalkie.app-runtime-saveable-release-41 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/b09611a8536d4ee49cdcaa36366f0460/transformed/runtime-saveable-release/res
+com.example.walkietalkie.app-customview-poolingcontainer-1.0.0-42 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/b905432fb544e568714b3aacfc0929ec/transformed/customview-poolingcontainer-1.0.0/res
+com.example.walkietalkie.app-lifecycle-runtime-ktx-release-43 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/ba5f84b2eb59d7afcef30d39321175b1/transformed/lifecycle-runtime-ktx-release/res
+com.example.walkietalkie.app-ui-release-44 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/beb2c746447cbc0ae4b924dcc0008900/transformed/ui-release/res
+com.example.walkietalkie.app-activity-ktx-1.9.1-45 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/c02fe1083b05ce38efc6dacb8d115384/transformed/activity-ktx-1.9.1/res
+com.example.walkietalkie.app-play-services-base-18.5.0-46 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/c4bea6da6232ac6510f1e5b07a165eed/transformed/play-services-base-18.5.0/res
+com.example.walkietalkie.app-lifecycle-livedata-core-2.8.4-47 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/c93bff8fa072e694d934fba0474a7d9b/transformed/lifecycle-livedata-core-2.8.4/res
+com.example.walkietalkie.app-play-services-basement-18.4.0-48 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/c9ddd51e67c9ceb0c32bbad19632e3de/transformed/play-services-basement-18.4.0/res
+com.example.walkietalkie.app-savedstate-ktx-1.2.1-49 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/cdd8436b2bfc43028cac9f7a36a1eb85/transformed/savedstate-ktx-1.2.1/res
+com.example.walkietalkie.app-material-icons-extended-release-50 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/d052de981a5c126aa185c2a72dbe8ecd/transformed/material-icons-extended-release/res
+com.example.walkietalkie.app-room-runtime-2.6.1-51 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/d2d48dd98adeb3d0d18d109726a74a22/transformed/room-runtime-2.6.1/res
+com.example.walkietalkie.app-ui-util-release-52 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/d4717bc8c74e292f696f9949600cfd4c/transformed/ui-util-release/res
+com.example.walkietalkie.app-lifecycle-viewmodel-release-53 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/d47312893cef2979451f3753d35c57fd/transformed/lifecycle-viewmodel-release/res
+com.example.walkietalkie.app-ui-tooling-data-release-54 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/d7f705606e3da408956dcbddf15a4ba3/transformed/ui-tooling-data-release/res
+com.example.walkietalkie.app-ui-tooling-release-55 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/ddcaa30b073b6994f6d43856786fddac/transformed/ui-tooling-release/res
+com.example.walkietalkie.app-lifecycle-viewmodel-compose-release-56 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/ecb1eae006d6b663d0bc48bba42a94b3/transformed/lifecycle-viewmodel-compose-release/res
+com.example.walkietalkie.app-navigation-runtime-2.7.7-57 /data/user/0/com.tom.rv2ide/files/home/.gradle/caches/transforms-3/f75def94a6af1f28f7d14f1cb954c79c/transformed/navigation-runtime-2.7.7/res
+com.example.walkietalkie.app-pngs-58 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/build/generated/res/pngs/debug
+com.example.walkietalkie.app-resValues-59 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/build/generated/res/resValues/debug
+com.example.walkietalkie.app-packageDebugResources-60 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.walkietalkie.app-packageDebugResources-61 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.walkietalkie.app-merged_res-62 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/build/intermediates/merged_res/debug
+com.example.walkietalkie.app-debug-63 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/src/debug/res
+com.example.walkietalkie.app-main-64 /storage/emulated/0/Download/WalkieTalkieApp (2)/walkietalkie/app/src/main/res
