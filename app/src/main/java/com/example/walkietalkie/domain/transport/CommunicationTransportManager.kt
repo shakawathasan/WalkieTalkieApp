@@ -92,10 +92,11 @@ class CommunicationTransportManager(
         }
     }
 
-    private fun encodeForOnline(packet: NetworkPacket): ByteArray =
-        "${packet.messageId}|${packet.senderId}|${packet.destinationId}|${packet.packetType.name}|" +
+    private fun encodeForOnline(packet: NetworkPacket): ByteArray {
+    val rawString = "${packet.messageId}|${packet.senderId}|${packet.destinationId}|${packet.packetType.name}|" +
             String(packet.payload, StandardCharsets.UTF_8)
-            .toByteArray(StandardCharsets.UTF_8)
+    return rawString.toByteArray(StandardCharsets.UTF_8)
+}
 
     private fun observeIncoming() {
         scope.launch { nearbyManager.incomingPackets.collect { onPacketReceived(it) } }
