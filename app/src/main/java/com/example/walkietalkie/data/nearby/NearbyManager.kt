@@ -1,199 +1,153 @@
-package com.example.walkietalkie.data.nearby
+package com.example.walkietalkie.ui.nearby
 
-import android.content.Context
-import android.util.Log
-import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.*
-import com.example.walkietalkie.domain.model.ConnectionQuality
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.walkietalkie.domain.model.NearbyPeer
-import com.example.walkietalkie.domain.model.NetworkPacket
-import com.example.walkietalkie.domain.model.PacketType
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
-import java.util.UUID
+import com.example.walkietalkie.ui.components.GlassContainer
 
-class NearbyManager(
-    private val context: Context,
-    private val localDeviceId: String,
-    private val localDisplayName: String
+@Composable
+fun NearbyScreen(
+    viewModel: NearbyViewModel
 ) {
-    private val serviceId = "com.example.walkietalkie.SERVICE"
-    private val client = Nearby.getConnectionsClient(context)
+    val peersMap by viewModel.peers.collectAsState()
+    val peers = peersMap.values.toList()
 
-    private val _peers = MutableStateFlow<Map<String, NearbyPeer>>(emptyMap())
-    val peers: StateFlow<Map<String, NearbyPeer>> = _peers.asStateFlow()
-
-    private val _incomingPackets = MutableSharedFlow<NetworkPacket>(extraBufferCapacity = 64)
-    val incomingPackets: SharedFlow<NetworkPacket> = _incomingPackets
-
-    private val seenMessageIds = object : LinkedHashMap<String, Long>(256, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Long>?): Boolean =
-            size > 500
-    }
-
-    private val connectedEndpoints = mutableSetOf<String>()
-    private val endpointIdToDeviceId = mutableMapOf<String, String>()
-
-    fun startAdvertising() {
-        val options = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build()
-        client.startAdvertising(
-            localDisplayName, serviceId, connectionLifecycleCallback, options
-        ).addOnFailureListener { Log.e(TAG, "advertise failed", it) }
-    }
-
-    fun startDiscovery() {
-        val options = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build()
-        client.startDiscovery(serviceId, endpointDiscoveryCallback, options)
-            .addOnFailureListener { Log.e(TAG, "discovery failed", it) }
-    }
-
-    fun stopAll() {
-        client.stopAdvertising()
-        client.stopDiscovery()
-        client.stopAllEndpoints()
-        connectedEndpoints.clear()
-        endpointIdToDeviceId.clear()
-        _peers.value = emptyMap()
-    }
-
-    fun requestConnection(endpointId: String) {
-        client.requestConnection(localDisplayName, endpointId, connectionLifecycleCallback)
-            .addOnFailureListener { Log.e(TAG, "requestConnection failed to $endpointId", it) }
-    }
-
-    fun disconnect(endpointId: String) {
-        client.disconnectFromEndpoint(endpointId)
-        connectedEndpoints.remove(endpointId)
-        _peers.value = _peers.value - endpointId
-    }
-
-    fun send(packet: NetworkPacket) {
-        val bytes = encode(packet)
-        val directEndpoint = connectedEndpoints.firstOrNull { endpointIdToDeviceId[it] == packet.destinationId }
-        val targets = if (directEndpoint != null) listOf(directEndpoint) else connectedEndpoints.toList()
-        if (targets.isEmpty()) return
-        client.sendPayload(targets, Payload.fromBytes(bytes))
-    }
-
-    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
-        override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            // Auto-accept connection requests so walkie talkies pair automatically
-            client.acceptConnection(endpointId, payloadCallback)
-        }
-
-        override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
-            if (result.status.isSuccess) {
-                connectedEndpoints.add(endpointId)
-                updatePeer(endpointId, isDirect = true, quality = ConnectionQuality.STRONG)
-                Log.d(TAG, "Successfully connected to endpoint: $endpointId")
-            } else {
-                Log.e(TAG, "Connection failed to endpoint: $endpointId with status ${result.status.statusCode}")
-            }
-        }
-
-        override fun onDisconnected(endpointId: String) {
-            connectedEndpoints.remove(endpointId)
-            _peers.value = _peers.value - endpointId
-            Log.d(TAG, "Disconnected from endpoint: $endpointId")
-        }
-    }
-
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
-            Log.d(TAG, "Endpoint found: $endpointId (${info.endpointName})")
-            updatePeer(endpointId, isDirect = false, quality = ConnectionQuality.MEDIUM, name = info.endpointName)
-            
-            // Automatically initiate connection when an endpoint is discovered
-            requestConnection(endpointId)
-        }
-
-        override fun onEndpointLost(endpointId: String) {
-            _peers.value = _peers.value - endpointId
-        }
-    }
-
-    private val payloadCallback = object : PayloadCallback() {
-        override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            val bytes = payload.asBytes() ?: return
-            val packet = decode(bytes) ?: return
-
-            if (seenMessageIds.containsKey(packet.messageId)) return
-            if (packet.isExpired()) return
-            seenMessageIds[packet.messageId] = System.currentTimeMillis()
-
-            _incomingPackets.tryEmit(packet)
-
-            val isForUs = packet.destinationId == localDeviceId
-            if (!isForUs && packet.canRelayFurther()) {
-                val relayed = packet.copy(hopCount = packet.hopCount + 1)
-                send(relayed)
-            }
-        }
-
-        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {}
-    }
-
-    private fun updatePeer(
-        endpointId: String,
-        isDirect: Boolean,
-        quality: ConnectionQuality,
-        name: String? = null
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0F172A), // Dark Slate
+                        Color(0xFF020617)  // Obsidian Black
+                    )
+                )
+            )
     ) {
-        val existing = _peers.value[endpointId]
-        val peer = NearbyPeer(
-            endpointId = endpointId,
-            deviceId = endpointIdToDeviceId[endpointId] ?: endpointId,
-            displayName = name ?: existing?.displayName ?: endpointId,
-            isDirect = isDirect,
-            hopCount = if (isDirect) 0 else (existing?.hopCount ?: 1),
-            quality = quality,
-            trusted = existing?.trusted ?: true
+        // Ambient Neon Backlights
+        Box(
+            modifier = Modifier
+                .size(260.dp)
+                .align(Alignment.TopEnd)
+                .offset(x = 60.dp, y = (-20).dp)
+                .blur(80.dp)
+                .background(Color(0xFF00E5FF).copy(alpha = 0.25f), CircleShape)
         )
-        _peers.value = _peers.value + (endpointId to peer)
-    }
-
-    private fun encode(packet: NetworkPacket): ByteArray {
-        val header = "${packet.messageId}|${packet.senderId}|${packet.destinationId}|" +
-            "${packet.timestamp}|${packet.hopCount}|${packet.maxHops}|${packet.routeId}|${packet.packetType.name}|"
-        val headerBytes = header.toByteArray(StandardCharsets.UTF_8)
-        val buffer = ByteBuffer.allocate(4 + headerBytes.size + packet.payload.size)
-        buffer.putInt(headerBytes.size)
-        buffer.put(headerBytes)
-        buffer.put(packet.payload)
-        return buffer.array()
-    }
-
-    private fun decode(bytes: ByteArray): NetworkPacket? = try {
-        val buffer = ByteBuffer.wrap(bytes)
-        val headerLen = buffer.int
-        val headerBytes = ByteArray(headerLen)
-        buffer.get(headerBytes)
-        val payload = ByteArray(buffer.remaining())
-        buffer.get(payload)
-        val parts = String(headerBytes, StandardCharsets.UTF_8).split("|")
-        NetworkPacket(
-            messageId = parts[0],
-            senderId = parts[1],
-            destinationId = parts[2],
-            timestamp = parts[3].toLong(),
-            hopCount = parts[4].toInt(),
-            maxHops = parts[5].toInt(),
-            routeId = parts[6],
-            packetType = PacketType.valueOf(parts[7]),
-            payload = payload
+        Box(
+            modifier = Modifier
+                .size(300.dp)
+                .align(Alignment.BottomStart)
+                .offset(x = (-60).dp, y = 60.dp)
+                .blur(100.dp)
+                .background(Color(0xFF7C3AED).copy(alpha = 0.3f), CircleShape)
         )
-    } catch (e: Exception) {
-        Log.e(TAG, "decode failed", e)
-        null
-    }
 
-    companion object {
-        private const val TAG = "NearbyManager"
-        fun newMessageId(): String = UUID.randomUUID().toString()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+        ) {
+            // Header Card
+            GlassContainer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "NEARBY PEERS",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 2.sp,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        text = "${peers.size} Found",
+                        color = Color(0xFF00E5FF),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            // Discovered Peers List
+            if (peers.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    GlassContainer {
+                        Text(
+                            text = "Scanning for nearby devices...",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(peers, key = { it.endpointId }) { peer ->
+                        PeerGlassItem(peer = peer)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PeerGlassItem(peer: NearbyPeer) {
+    GlassContainer(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = peer.displayName,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = if (peer.isDirect) "Direct Connection" else "Relayed (${peer.hopCount} hops)",
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
+            }
+            Text(
+                text = if (peer.isDirect) "● Connected" else "● Discovered",
+                color = if (peer.isDirect) Color(0xFF00E5FF) else Color.Yellow,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
     }
 }
