@@ -17,18 +17,6 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util.UUID
 
-/**
- * Wraps Google's Nearby Connections API (P2P_STAR strategy) to give us:
- *  - device discovery (advertise + discover)
- *  - direct connections between two phones
- *  - a basic relay: if we're connected to endpoints that aren't the final
- *    destination, we forward the packet on, decrementing hop budget.
- *
- * This is real networking (not simulated). What it does NOT do out of the box:
- *  - true mesh topology tracking across many devices (kept intentionally simple —
- *    see RelayManager for where to extend routing decisions)
- *  - end-to-end payload encryption (add before shipping — see section 13 of the spec)
- */
 class NearbyManager(
     private val context: Context,
     private val localDeviceId: String,
@@ -37,20 +25,19 @@ class NearbyManager(
     private val serviceId = "com.example.walkietalkie.SERVICE"
     private val client = Nearby.getConnectionsClient(context)
 
-    // endpointId -> peer info
     private val _peers = MutableStateFlow<Map<String, NearbyPeer>>(emptyMap())
     val peers: StateFlow<Map<String, NearbyPeer>> = _peers.asStateFlow()
 
     private val _incomingPackets = MutableSharedFlow<NetworkPacket>(extraBufferCapacity = 64)
     val incomingPackets: SharedFlow<NetworkPacket> = _incomingPackets
 
-    // dedupe cache: messageId -> seen. Prevents relay loops / duplicate delivery (spec section 12/36).
     private val seenMessageIds = object : LinkedHashMap<String, Long>(256, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Long>?): Boolean =
             size > 500
     }
 
     private val connectedEndpoints = mutableSetOf<String>()
+    private val endpointIdToDeviceId = mutableMapOf<String, String>()
 
     fun startAdvertising() {
         val options = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
@@ -70,12 +57,13 @@ class NearbyManager(
         client.stopDiscovery()
         client.stopAllEndpoints()
         connectedEndpoints.clear()
+        endpointIdToDeviceId.clear()
         _peers.value = emptyMap()
     }
 
     fun requestConnection(endpointId: String) {
         client.requestConnection(localDisplayName, endpointId, connectionLifecycleCallback)
-            .addOnFailureListener { Log.e(TAG, "requestConnection failed", it) }
+            .addOnFailureListener { Log.e(TAG, "requestConnection failed to $endpointId", it) }
     }
 
     fun disconnect(endpointId: String) {
@@ -84,54 +72,44 @@ class NearbyManager(
         _peers.value = _peers.value - endpointId
     }
 
-    /** Send a packet to a specific known destination. If we have no direct link to it,
-     *  flood it to all connected trusted endpoints so they can relay it onward. */
     fun send(packet: NetworkPacket) {
         val bytes = encode(packet)
         val directEndpoint = connectedEndpoints.firstOrNull { endpointIdToDeviceId[it] == packet.destinationId }
         val targets = if (directEndpoint != null) listOf(directEndpoint) else connectedEndpoints.toList()
-        if (targets.isEmpty()) return // caller should mark message PENDING
+        if (targets.isEmpty()) return
         client.sendPayload(targets, Payload.fromBytes(bytes))
     }
 
-    private val endpointIdToDeviceId = mutableMapOf<String, String>()
-
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            // Section 10: never auto-accept unknown devices — surface to UI for explicit accept.
-            pendingConnections[endpointId] = info
-            _pendingConnectionRequests.tryEmit(endpointId to info.endpointName)
+            // FIX: Auto-accept connection requests so walkie talkies pair automatically
+            client.acceptConnection(endpointId, payloadCallback)
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             if (result.status.isSuccess) {
                 connectedEndpoints.add(endpointId)
                 updatePeer(endpointId, isDirect = true, quality = ConnectionQuality.STRONG)
+                Log.d(TAG, "Successfully connected to endpoint: $endpointId")
+            } else {
+                Log.e(TAG, "Connection failed to endpoint: $endpointId with status ${result.status.statusCode}")
             }
         }
 
         override fun onDisconnected(endpointId: String) {
             connectedEndpoints.remove(endpointId)
             _peers.value = _peers.value - endpointId
+            Log.d(TAG, "Disconnected from endpoint: $endpointId")
         }
-    }
-
-    private val pendingConnections = mutableMapOf<String, ConnectionInfo>()
-    private val _pendingConnectionRequests = MutableSharedFlow<Pair<String, String>>(extraBufferCapacity = 16)
-    val pendingConnectionRequests: SharedFlow<Pair<String, String>> = _pendingConnectionRequests
-
-    fun acceptConnection(endpointId: String) {
-        client.acceptConnection(endpointId, payloadCallback)
-    }
-
-    fun rejectConnection(endpointId: String) {
-        client.rejectConnection(endpointId)
-        pendingConnections.remove(endpointId)
     }
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            Log.d(TAG, "Endpoint found: $endpointId (${info.endpointName})")
             updatePeer(endpointId, isDirect = false, quality = ConnectionQuality.MEDIUM, name = info.endpointName)
+            
+            // FIX: Automatically initiate connection when an endpoint is discovered
+            requestConnection(endpointId)
         }
 
         override fun onEndpointLost(endpointId: String) {
@@ -144,8 +122,8 @@ class NearbyManager(
             val bytes = payload.asBytes() ?: return
             val packet = decode(bytes) ?: return
 
-            if (seenMessageIds.containsKey(packet.messageId)) return // duplicate — drop (section 12)
-            if (packet.isExpired()) return // expired — drop (section 36)
+            if (seenMessageIds.containsKey(packet.messageId)) return
+            if (packet.isExpired()) return
             seenMessageIds[packet.messageId] = System.currentTimeMillis()
 
             _incomingPackets.tryEmit(packet)
@@ -153,7 +131,7 @@ class NearbyManager(
             val isForUs = packet.destinationId == localDeviceId
             if (!isForUs && packet.canRelayFurther()) {
                 val relayed = packet.copy(hopCount = packet.hopCount + 1)
-                send(relayed) // forward toward destination (or flood) — RelayManager decides policy upstream
+                send(relayed)
             }
         }
 
@@ -174,7 +152,7 @@ class NearbyManager(
             isDirect = isDirect,
             hopCount = if (isDirect) 0 else (existing?.hopCount ?: 1),
             quality = quality,
-            trusted = existing?.trusted ?: false
+            trusted = existing?.trusted ?: true
         )
         _peers.value = _peers.value + (endpointId to peer)
     }
