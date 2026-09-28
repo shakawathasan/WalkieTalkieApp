@@ -40,14 +40,14 @@ class NearbyManager(
     private val endpointIdToDeviceId = mutableMapOf<String, String>()
 
     fun startAdvertising() {
-        val options = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        val options = AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build()
         client.startAdvertising(
             localDisplayName, serviceId, connectionLifecycleCallback, options
         ).addOnFailureListener { Log.e(TAG, "advertise failed", it) }
     }
 
     fun startDiscovery() {
-        val options = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build()
+        val options = DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build()
         client.startDiscovery(serviceId, endpointDiscoveryCallback, options)
             .addOnFailureListener { Log.e(TAG, "discovery failed", it) }
     }
@@ -82,7 +82,7 @@ class NearbyManager(
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
         override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
-            // FIX: Auto-accept connection requests so walkie talkies pair automatically
+            // Auto-accept connection requests so walkie talkies pair automatically
             client.acceptConnection(endpointId, payloadCallback)
         }
 
@@ -108,7 +108,7 @@ class NearbyManager(
             Log.d(TAG, "Endpoint found: $endpointId (${info.endpointName})")
             updatePeer(endpointId, isDirect = false, quality = ConnectionQuality.MEDIUM, name = info.endpointName)
             
-            // FIX: Automatically initiate connection when an endpoint is discovered
+            // Automatically initiate connection when an endpoint is discovered
             requestConnection(endpointId)
         }
 
