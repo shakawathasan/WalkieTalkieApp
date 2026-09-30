@@ -1,85 +1,72 @@
 package com.example.walkietalkie.ui.nearby
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.walkietalkie.WalkieTalkieApp
-import com.example.walkietalkie.domain.model.NearbyPeer
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-
-class NearbyViewModel(private val app: WalkieTalkieApp) : ViewModel() {
-    val peers: StateFlow<List<NearbyPeer>> = app.nearbyManager.peers
-        .map { it.values.toList() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    init {
-        viewModelScope.launch {
-            app.nearbyManager.pendingConnectionRequests.collect { (endpointId, name) ->
-                pendingRequest = endpointId to name
-            }
-        }
-    }
-
-    var pendingRequest by mutableStateOf<Pair<String, String>?>(null)
-        private set
-
-    fun connect(endpointId: String) = app.nearbyManager.requestConnection(endpointId)
-    fun disconnect(endpointId: String) = app.nearbyManager.disconnect(endpointId)
-    fun accept() { pendingRequest?.let { app.nearbyManager.acceptConnection(it.first) }; pendingRequest = null }
-    fun decline() { pendingRequest?.let { app.nearbyManager.rejectConnection(it.first) }; pendingRequest = null }
-}
+import com.example.walkietalkie.data.nearby.NearbyManager
 
 @Composable
-fun NearbyScreen(app: WalkieTalkieApp) {
-    val viewModel = remember { NearbyViewModel(app) }
-    val peers by viewModel.peers.collectAsState()
+fun NearbyScreen(
+    nearbyManager: NearbyManager
+) {
+    val peersMap by nearbyManager.peers.collectAsState()
+    val pendingRequests by nearbyManager.pendingConnectionRequests.collectAsState()
+    val peers = peersMap.values.toList()
 
-    Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Nearby", style = MaterialTheme.typography.titleLarge)
-        Spacer(Modifier.height(12.dp))
-
-        viewModel.pendingRequest?.let { (_, name) ->
-            Card(Modifier.fillMaxWidth().padding(bottom = 12.dp)) {
-                Column(Modifier.padding(12.dp)) {
-                    Text("$name wants to connect")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0F172A))
+            .padding(16.dp)
+    ) {
+        Text(text = "Pending Requests", color = Color.White)
+        LazyColumn {
+            items(pendingRequests) { peer ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(peer.displayName, color = Color.White)
                     Row {
-                        Button(onClick = { viewModel.accept() }) { Text("Accept") }
-                        Spacer(Modifier.width(8.dp))
-                        OutlinedButton(onClick = { viewModel.decline() }) { Text("Decline") }
+                        Button(onClick = { nearbyManager.acceptConnection(peer.endpointId) }) {
+                            Text("Accept")
+                        }
+                        Button(onClick = { nearbyManager.rejectConnection(peer.endpointId) }) {
+                            Text("Reject")
+                        }
                     }
                 }
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Discovered Peers", color = Color.White)
         LazyColumn {
             items(peers) { peer ->
                 Row(
-                    Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text(peer.displayName, style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            "${peer.quality.name.lowercase().replaceFirstChar { it.uppercase() }} · " +
-                                if (peer.isDirect) "Direct" else "${peer.hopCount} hop(s)"
-                        )
-                    }
+                    Text(peer.displayName, color = Color.White)
                     if (peer.isDirect) {
-                        OutlinedButton(onClick = { viewModel.disconnect(peer.endpointId) }) { Text("Disconnect") }
+                        Button(onClick = { nearbyManager.disconnect(peer.endpointId) }) {
+                            Text("Disconnect")
+                        }
                     } else {
-                        Button(onClick = { viewModel.connect(peer.endpointId) }) { Text("Connect") }
+                        Button(onClick = { nearbyManager.requestConnection(peer.endpointId) }) {
+                            Text("Connect")
+                        }
                     }
                 }
             }
