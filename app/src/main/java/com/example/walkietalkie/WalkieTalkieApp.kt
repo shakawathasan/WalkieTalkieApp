@@ -2,6 +2,7 @@ package com.example.walkietalkie
 
 import android.app.Application
 import com.example.walkietalkie.data.nearby.NearbyManager
+import com.example.walkietalkie.data.repository.MessageRepository
 import com.example.walkietalkie.domain.transport.CommunicationTransportManager
 
 class WalkieTalkieApp : Application() {
@@ -12,10 +13,14 @@ class WalkieTalkieApp : Application() {
     lateinit var transportManager: CommunicationTransportManager
         private set
 
+    lateinit var messageRepository: MessageRepository
+        private set
+
     override fun onCreate() {
         super.onCreate()
 
         nearbyManager = NearbyManager(this)
         transportManager = CommunicationTransportManager(nearbyManager)
+        messageRepository = MessageRepository(transportManager)
     }
 }
