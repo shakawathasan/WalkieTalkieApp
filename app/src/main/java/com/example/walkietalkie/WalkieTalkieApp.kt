@@ -21,6 +21,8 @@ class WalkieTalkieApp : Application() {
 
         nearbyManager = NearbyManager(this)
         transportManager = CommunicationTransportManager(nearbyManager)
-        messageRepository = MessageRepository(transportManager)
+        messageRepository = MessageRepository(
+            transportManager = transportManager
+        )
     }
 }
