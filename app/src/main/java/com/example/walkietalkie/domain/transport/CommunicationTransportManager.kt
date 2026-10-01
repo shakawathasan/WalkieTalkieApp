@@ -9,13 +9,16 @@ class CommunicationTransportManager(
     private val nearbyManager: NearbyManager,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 ) {
+    fun start() = startTransport()
+    fun stop() = stopTransport()
+
     fun startTransport() {
         nearbyManager.startAdvertising()
         nearbyManager.startDiscovery()
 
         scope.launch {
             nearbyManager.incomingPackets.collect { packet ->
-                // Handle incoming packet
+                // Handle packet
             }
         }
     }
@@ -26,5 +29,9 @@ class CommunicationTransportManager(
 
     fun sendData(endpointId: String, data: ByteArray) {
         nearbyManager.send(endpointId, data)
+    }
+
+    fun sendPacket(endpointId: String, data: ByteArray) {
+        sendData(endpointId, data)
     }
 }
