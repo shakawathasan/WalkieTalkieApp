@@ -66,7 +66,7 @@ class NearbyManager(
         }
 
         override fun onDisconnected(endpointId: String) {
-            _peers.update { currentPeers - endpointId }
+            _peers.update { currentPeers -> currentPeers - endpointId }
         }
     }
 
