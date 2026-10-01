@@ -7,4 +7,3 @@ enum class ConnectionQuality {
     POOR,
     UNKNOWN
 }
-
