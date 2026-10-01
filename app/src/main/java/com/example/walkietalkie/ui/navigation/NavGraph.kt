@@ -64,7 +64,7 @@ fun WalkieTalkieNavHost(app: WalkieTalkieApp) {
             composable(Dest.Walkie.route) { WalkieScreen(app, activeContactId = "demo-contact") }
             composable(Dest.Chats.route) { ChatScreen(app, conversationId = "demo-conversation", receiverId = "demo-contact") }
             composable(Dest.Radar.route) { RadarScreen(app) }
-            composable(Dest.Nearby.route) { NearbyScreen(app) }
+            composable(Dest.Nearby.route) { NearbyScreen(app.nearbyManager) }
             composable(Dest.Settings.route) { SettingsScreen() }
         }
     }
