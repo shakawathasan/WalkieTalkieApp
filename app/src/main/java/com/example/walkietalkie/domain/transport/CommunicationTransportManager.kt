@@ -18,7 +18,7 @@ class CommunicationTransportManager(
 
         scope.launch {
             nearbyManager.incomingPackets.collect { packet ->
-                // Handle packet
+                // Handle incoming packet
             }
         }
     }
@@ -32,6 +32,10 @@ class CommunicationTransportManager(
     }
 
     fun sendPacket(endpointId: String, data: ByteArray) {
+        sendData(endpointId, data)
+    }
+
+    fun sendPacket(endpointId: String, packetType: Any, data: ByteArray, vararg extraArgs: Any?) {
         sendData(endpointId, data)
     }
 }
