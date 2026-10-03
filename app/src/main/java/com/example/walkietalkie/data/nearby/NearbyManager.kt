@@ -57,7 +57,7 @@ class NearbyManager(
                         deviceId = endpointId,
                         isDirect = true,
                         hopCount = 0,
-                        quality = ConnectionQuality.EXCELLENT,
+                        quality = ConnectionQuality.STRONG,
                         trusted = true
                     )
                     currentPeers + (endpointId to updated)
@@ -78,7 +78,7 @@ class NearbyManager(
                 deviceId = endpointId,
                 isDirect = false,
                 hopCount = 1,
-                quality = ConnectionQuality.GOOD,
+                quality = ConnectionQuality.MEDIUM,
                 trusted = false
             )
             _peers.update { it + (endpointId to newPeer) }
